@@ -11,17 +11,21 @@ import { clsx } from "clsx";
 import { Control, FieldValues, Path, Controller } from "react-hook-form";
 import { colors } from "@/styles/colors";
 interface InputProps<T extends FieldValues> extends TextInputProps {
-  control: Control<T>;
   name: Path<T>;
-  leftIconName?: keyof typeof MaterialIcons.glyphMap;
   label?: string;
+  error?: boolean;
+  textError?: string;
+  control: Control<T>;
+  leftIconName?: keyof typeof MaterialIcons.glyphMap;
 }
 
 export const Input = <T extends FieldValues>({
-  control,
   name,
-  leftIconName,
   label,
+  control,
+  textError,
+  leftIconName,
+  error = false,
   secureTextEntry,
   ...rest
 }: InputProps<T>) => {
@@ -51,7 +55,14 @@ export const Input = <T extends FieldValues>({
                 {label}
               </Text>
             )}
-            <TouchableOpacity className="flex-row items-center justify-between border-solid border-b-[1px] border-gray-600 px-3 py-2 h-16">
+            <TouchableOpacity
+              className={clsx(
+                "flex-row items-center justify-between border-solid border-b-[1px] border-gray-600 px-3 py-2 h-16",
+                {
+                  "border-accent-red-background-primary": error,
+                },
+              )}
+            >
               {leftIconName && (
                 <MaterialIcons
                   name={leftIconName}
@@ -81,6 +92,9 @@ export const Input = <T extends FieldValues>({
                 </TouchableOpacity>
               )}
             </TouchableOpacity>
+            {error && (
+              <Text className="mt-2 text-sm text-accent-red">{textError}</Text>
+            )}
           </View>
         );
       }}
