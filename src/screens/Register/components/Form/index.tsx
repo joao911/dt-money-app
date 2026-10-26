@@ -61,7 +61,7 @@ export const Form = () => {
           name="nome"
           label="NOME"
           placeholder="Seu nome completo"
-          leftIconName="mail-outline"
+          leftIconName="person-outline"
           error={!!errors.nome}
           textError={errors.nome?.message}
         />

@@ -93,7 +93,17 @@ export const Input = <T extends FieldValues>({
               )}
             </TouchableOpacity>
             {error && (
-              <Text className="mt-2 text-sm text-accent-red">{textError}</Text>
+              <View className="flex-row items-center ">
+                <MaterialIcons
+                  name="error-outline"
+                  size={16}
+                  color={colors["accent-red"]}
+                  className="mt-2 mr-2"
+                />
+                <Text className="mt-2 text-sm text-accent-red">
+                  {textError}
+                </Text>
+              </View>
             )}
           </View>
         );
