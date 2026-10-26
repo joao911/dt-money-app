@@ -1,7 +1,8 @@
+import { useCallback, useState } from "react";
 import { NavigationContainer } from "@react-navigation/native";
+import { SystemBars } from "react-native-edge-to-edge";
 
 import { PublicRoutes } from "./PublicRoutes";
-import { useCallback, useState } from "react";
 import { PrivateRoutes } from "./PrivateRoutes";
 
 const NavigationRoutes = () => {
@@ -14,8 +15,10 @@ const NavigationRoutes = () => {
       return <PrivateRoutes />;
     }
   }, [user]);
+
   return (
     <NavigationContainer>
+      <SystemBars style="light" />
       <Router />
     </NavigationContainer>
   );
