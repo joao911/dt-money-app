@@ -8,36 +8,36 @@ import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { PublicStackParamList } from "@/routes/PublicRoutes";
 
+const loginSchema = z
+  .object({
+    nome: z.string().min(5, "Nome obrigatório"),
+    email: z.string().min(5, "Email obrigatório").email("Email inválido"),
+    password: z
+      .string()
+      .min(8, "A senha deve ter no mínimo 8 caracteres")
+      .regex(/[A-Z]/, "A senha deve conter pelo menos uma letra maiúscula")
+      .regex(/\d/, "A senha deve conter pelo menos um número")
+      .regex(
+        /[!@#$%^&*(),.?":{}|<>]/,
+        "A senha deve conter pelo menos um caractere especial",
+      ),
+    confirmPassword: z.string().min(1, "Confirme a senha"),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "As senhas devem ser iguais",
+    path: ["confirmPassword"],
+  });
+
+export type RegisterFormData = z.infer<typeof loginSchema>;
+
 export const Form = () => {
   const navigation = useNavigation<StackNavigationProp<PublicStackParamList>>();
-
-  const loginSchema = z
-    .object({
-      nome: z.string().min(5, "Nome obrigatório"),
-      email: z.string().min(5, "Email obrigatório").email("Email inválido"),
-      password: z
-        .string()
-        .min(8, "A senha deve ter no mínimo 8 caracteres")
-        .regex(/[A-Z]/, "A senha deve conter pelo menos uma letra maiúscula")
-        .regex(/\d/, "A senha deve conter pelo menos um número")
-        .regex(
-          /[!@#$%^&*(),.?":{}|<>]/,
-          "A senha deve conter pelo menos um caractere especial",
-        ),
-      confirmPassword: z.string().min(1, "Confirme a senha"),
-    })
-    .refine((data) => data.password === data.confirmPassword, {
-      message: "As senhas devem ser iguais",
-      path: ["confirmPassword"],
-    });
-
-  type LoginFormData = z.infer<typeof loginSchema>;
 
   const {
     control,
     handleSubmit,
     formState: { errors },
-  } = useForm<LoginFormData>({
+  } = useForm<RegisterFormData>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
       nome: "",
@@ -49,7 +49,7 @@ export const Form = () => {
 
   console.log("errors", errors);
 
-  const onSubmit = (data: LoginFormData) => {
+  const onSubmit = (data: RegisterFormData) => {
     console.log("data", data);
   };
 

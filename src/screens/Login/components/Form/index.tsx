@@ -8,15 +8,15 @@ import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { PublicStackParamList } from "@/routes/PublicRoutes";
 
+const loginSchema = z.object({
+  email: z.string().min(5, "Email obrigatório").email("Email inválido"),
+  password: z.string().min(5, "Senha obrigatória"),
+});
+
+export type LoginFormData = z.infer<typeof loginSchema>;
+
 export const Form = () => {
   const navigation = useNavigation<StackNavigationProp<PublicStackParamList>>();
-
-  const loginSchema = z.object({
-    login: z.string().min(5, "Email obrigatório").email("Email inválido"),
-    password: z.string().min(5, "Senha obrigatória"),
-  });
-
-  type LoginFormData = z.infer<typeof loginSchema>;
 
   const {
     control,
@@ -25,14 +25,14 @@ export const Form = () => {
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      login: "",
+      email: "",
       password: "",
     },
   });
 
   console.log("errors", errors);
 
-  const onSubmit = (data: LoginFormData) => {
+  const onSubmit = async (data: LoginFormData) => {
     console.log("data", data);
   };
 
@@ -40,13 +40,13 @@ export const Form = () => {
     <View>
       <Input
         control={control}
-        name="login"
+        name="email"
         label="EMAIL"
         placeholder="EMAIL"
         leftIconName="mail-outline"
         autoCapitalize="none"
-        error={!!errors.login}
-        textError={errors.login?.message}
+        error={!!errors.email}
+        textError={errors.email?.message}
       />
       <Input
         control={control}
