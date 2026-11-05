@@ -4,9 +4,10 @@ import { SystemBars } from "react-native-edge-to-edge";
 
 import { PublicRoutes } from "./PublicRoutes";
 import { PrivateRoutes } from "./PrivateRoutes";
+import { useAuthContext } from "@/context/auth.context";
 
 const NavigationRoutes = () => {
-  const [user, setUser] = useState(null);
+  const { user } = useAuthContext();
 
   const Router = useCallback(() => {
     if (!user) {

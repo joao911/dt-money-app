@@ -7,6 +7,7 @@ import { AppButton } from "@/components/AppButton";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { PublicStackParamList } from "@/routes/PublicRoutes";
+import { useAuthContext } from "@/context/auth.context";
 
 const loginSchema = z
   .object({
@@ -32,8 +33,9 @@ export type RegisterFormData = z.infer<typeof loginSchema>;
 
 export const Form = () => {
   const navigation = useNavigation<StackNavigationProp<PublicStackParamList>>();
-
+  const { handleRegister } = useAuthContext();
   const {
+    reset,
     control,
     handleSubmit,
     formState: { errors },
@@ -49,8 +51,18 @@ export const Form = () => {
 
   console.log("errors", errors);
 
-  const onSubmit = (data: RegisterFormData) => {
+  const onSubmit = async (data: RegisterFormData) => {
     console.log("data", data);
+    try {
+      await handleRegister({
+        name: data.nome,
+        email: data.email,
+        password: data.password,
+      });
+      reset();
+    } catch (error) {
+      console.log("error", error);
+    }
   };
 
   return (

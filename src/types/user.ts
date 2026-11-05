@@ -1,5 +1,3 @@
-import { ZodNullable } from "zod";
-
 export interface IUser {
   user: {
     id: number;
@@ -10,4 +8,10 @@ export interface IUser {
     deletedAt: Date | null;
   };
   token: string;
+}
+
+export interface IRegister {
+  name: string;
+  email: string;
+  password: string;
 }
