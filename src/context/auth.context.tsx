@@ -43,7 +43,10 @@ export const AuthProvider: FC<PropsWithChildren> = ({ children }) => {
     }
     console.log("response register", response);
   };
-  const handleLogout = () => {};
+  const handleLogout = async () => {
+    await AsyncStorage.clear();
+    setUser(null);
+  };
 
   const restoreUserSession = async () => {
     const user = await AsyncStorage.getItem("dt-money-user");
