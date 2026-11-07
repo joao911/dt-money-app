@@ -1,3 +1,4 @@
+import { AppError } from "@/types/utils/AppError";
 import axios from "axios";
 import { Platform } from "react-native";
 
@@ -9,3 +10,14 @@ const baseUrl = Platform.select({
 export const dtMoneyUrl = axios.create({
   baseURL: baseUrl,
 });
+
+dtMoneyUrl.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response && error.response.data) {
+      return Promise.reject(new AppError(error.response.data.message));
+    } else {
+      return Promise.reject(new AppError("Falha na conexão com o servidor"));
+    }
+  },
+);

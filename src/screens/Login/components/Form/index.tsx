@@ -8,6 +8,8 @@ import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { PublicStackParamList } from "@/routes/PublicRoutes";
 import { AuthProvider, useAuthContext } from "@/context/auth.context";
+import { useSnackBarContext } from "@/context/snackbar.context";
+import { AppError } from "@/types/utils/AppError";
 
 const loginSchema = z.object({
   email: z.string().min(5, "Email obrigatório").email("Email inválido"),
@@ -19,6 +21,8 @@ export type LoginFormData = z.infer<typeof loginSchema>;
 export const Form = () => {
   const navigation = useNavigation<StackNavigationProp<PublicStackParamList>>();
   const { handleAuthenticate } = useAuthContext();
+  const { notifyMessage } = useSnackBarContext();
+
   const {
     control,
     handleSubmit,
@@ -35,8 +39,17 @@ export const Form = () => {
     try {
       console.log("data", data);
       await handleAuthenticate(data);
+      notifyMessage({
+        message: "Login realizado com sucesso",
+        type: "SUCCESS",
+      });
     } catch (error) {
-      console.log("error", error);
+      if (error instanceof AppError) {
+        notifyMessage({
+          message: error.message || "Falha ao realizar login",
+          type: "ERROR",
+        });
+      }
     }
   };
 
