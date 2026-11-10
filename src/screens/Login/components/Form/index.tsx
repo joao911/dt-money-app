@@ -9,7 +9,7 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import { PublicStackParamList } from "@/routes/PublicRoutes";
 import { AuthProvider, useAuthContext } from "@/context/auth.context";
 import { useSnackBarContext } from "@/context/snackbar.context";
-import { AppError } from "@/types/utils/AppError";
+import { AppError } from "@/utils/AppError";
 
 const loginSchema = z.object({
   email: z.string().min(5, "Email obrigatório").email("Email inválido"),

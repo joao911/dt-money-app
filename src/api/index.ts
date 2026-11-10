@@ -1,4 +1,4 @@
-import { AppError } from "@/types/utils/AppError";
+import { AppError } from "@/utils/AppError";
 import axios from "axios";
 import { Platform } from "react-native";
 
