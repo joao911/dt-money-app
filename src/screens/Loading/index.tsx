@@ -16,16 +16,13 @@ export const Loading = ({ setLoading }: ILoadingProps) => {
       try {
         await restoreUserSession();
         const user = await restoreUserSession();
-        console.log("user", user);
         if (!user) {
           await handleLogout();
         }
       } catch (error) {
         handleLogout();
-        console.log("error", error);
       } finally {
         setLoading(false);
-        console.log("loading", false);
       }
     };
     startApp();

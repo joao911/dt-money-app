@@ -6,16 +6,26 @@ import { View, TouchableOpacity, Text, TextInput } from "react-native";
 
 import { colors } from "@/styles/colors";
 import { useBottomSheetContext } from "@/context/bottomSheet.context";
+import { useState } from "react";
+import clsx from "clsx";
+import { SelectCategoryModal } from "../SelectCategoryModal";
+import { useSnackBarContext } from "@/context/snackbar.context";
+import { useTransactionContext } from "@/context/transaction.context";
 
 const transactionSchema = z.object({
   description: z.string().min(5, "Descrição obrigatória"),
-  category: z.string().min(5, "Categoria obrigatória"),
+
   price: z.string().min(1, "Preço obrigatório"),
 });
 
 export type TransactionFormData = z.infer<typeof transactionSchema>;
 export const NewTransaction = () => {
+  const { notifyMessage } = useSnackBarContext();
   const { closeBottomSheet } = useBottomSheetContext();
+  const { createTransaction } = useTransactionContext();
+
+  const [typeId, setTypeId] = useState(0);
+  const [categoryId, setCategoryId] = useState(0);
 
   const {
     control,
@@ -25,13 +35,39 @@ export const NewTransaction = () => {
     resolver: zodResolver(transactionSchema),
     defaultValues: {
       description: "",
-      category: "",
       price: "",
     },
   });
 
   const onSubmit = async (data: TransactionFormData) => {
-    console.log("data", data);
+    const price = Number(data.price.replace(/\D/g, ""));
+
+    console.log(price);
+    if (categoryId === 0) {
+      notifyMessage({
+        message: "Selecione uma categoria",
+        type: "ERROR",
+      });
+    } else {
+      try {
+        await createTransaction({
+          description: data.description,
+          value: price,
+          categoryId,
+          typeId,
+        });
+        notifyMessage({
+          message: "Transação criada com sucesso",
+          type: "SUCCESS",
+        });
+      } catch (error) {
+        console.log("erro ao criar transação", error);
+        notifyMessage({
+          message: "Erro ao criar transação",
+          type: "ERROR",
+        });
+      }
+    }
   };
   return (
     <View className="px-8 py-5">
@@ -54,7 +90,7 @@ export const NewTransaction = () => {
                   placeholderTextColor={colors.gray[600]}
                   onChangeText={onChange}
                   value={value}
-                  className="text-white text-lg h-[50px] bg-background-primary my-2 rounded-sm pl-4"
+                  className="text-white text-lg h-[50px] bg-background-primary my-2 rounded-md pl-4"
                 />
               );
             }}
@@ -97,7 +133,7 @@ export const NewTransaction = () => {
                   onChangeText={handlePriceChange}
                   value={value}
                   keyboardType="numeric"
-                  className="text-white text-lg h-[50px] bg-background-primary my-2 rounded-sm pl-4"
+                  className="text-white text-lg h-[50px] bg-background-primary my-2 rounded-md pl-4"
                 />
               );
             }}
@@ -116,54 +152,48 @@ export const NewTransaction = () => {
             </View>
           )}
         </View>
-        <View>
-          <Controller
-            control={control}
-            name="category"
-            render={({ field: { onChange, value } }) => {
-              return (
-                <TextInput
-                  className="text-white text-lg h-[50px] bg-background-primary my-2 rounded-sm pl-4"
-                  placeholder="Categoria"
-                  placeholderTextColor={colors.gray[600]}
-                  onChangeText={onChange}
-                  value={value}
-                />
-              );
-            }}
-          />
-          {errors.description && (
-            <View className="flex-row items-center ">
-              <MaterialIcons
-                name="error-outline"
-                size={16}
-                color={colors["accent-red"]}
-                className="mt-2 mr-2"
-              />
-              <Text className="mt-2 text-sm text-accent-red">
-                {errors.category?.message}
-              </Text>
-            </View>
-          )}
-        </View>
-        <View className="flex-row gap-4">
-          <TouchableOpacity className="flex-row items-center justify-center h-12 gap-2 mt-2 w-[48%] bg-background-tertiary">
+        <SelectCategoryModal
+          selectedCategory={categoryId}
+          onSelect={setCategoryId}
+        />
+        <View className="flex-row gap-4 mt-4">
+          <TouchableOpacity
+            onPress={() => setTypeId(1)}
+            className={clsx(
+              "flex-row items-center justify-center h-12 gap-2 mt-2 w-[48%] ",
+              typeId === 1
+                ? "bg-accent-brand-background-primary"
+                : "bg-background-tertiary",
+            )}
+          >
             <MaterialIcons
               name="arrow-circle-up"
               size={20}
-              color={colors["accent-brand"]}
+              color={typeId === 1 ? colors.white : colors["accent-brand"]}
               className="mr-2 "
             />
-            <Text className="text-gray-400">Entrada</Text>
+            <Text className={typeId === 1 ? "text-white" : "text-gray-400"}>
+              Entrada
+            </Text>
           </TouchableOpacity>
-          <TouchableOpacity className="flex-row items-center justify-center h-12 gap-2 mt-2 w-[48%] bg-background-tertiary">
+          <TouchableOpacity
+            onPress={() => setTypeId(0)}
+            className={clsx(
+              "flex-row items-center justify-center h-12 gap-2 mt-2 w-[48%] ",
+              typeId === 0
+                ? "bg-accent-red-background-primary"
+                : "bg-background-tertiary",
+            )}
+          >
             <MaterialIcons
               name="arrow-circle-down"
               size={20}
-              color={colors["accent-red"]}
+              color={typeId === 0 ? colors.white : colors["accent-red"]}
               className="mr-2 "
             />
-            <Text className="text-gray-400">Saída</Text>
+            <Text className={typeId === 0 ? "text-white" : "text-gray-400"}>
+              Saída
+            </Text>
           </TouchableOpacity>
         </View>
 
@@ -171,7 +201,7 @@ export const NewTransaction = () => {
           onPress={handleSubmit(onSubmit)}
           className="bg-accent-brand w-full items-center justify-center h-[50px] rounded-xl mt-4"
         >
-          <Text className="text-sm font-bold text-white">Salvar</Text>
+          <Text className="text-sm font-bold text-white">Registrar</Text>
         </TouchableOpacity>
       </View>
     </View>

@@ -28,7 +28,6 @@ export const AuthProvider: FC<PropsWithChildren> = ({ children }) => {
   const [user, setUser] = useState<IUser | null>(null);
   const handleAuthenticate = async (params: LoginFormData): Promise<void> => {
     const response = await authenticated(params);
-    console.log("response login", response);
     if (response.user) {
       await AsyncStorage.setItem("dt-money-user", JSON.stringify(response));
       setUser(response);
@@ -41,7 +40,6 @@ export const AuthProvider: FC<PropsWithChildren> = ({ children }) => {
       await AsyncStorage.setItem("dt-money-user", JSON.stringify(response));
       setUser(response);
     }
-    console.log("response register", response);
   };
   const handleLogout = async () => {
     await AsyncStorage.clear();
