@@ -2,7 +2,13 @@ import { z } from "zod";
 import { MaterialIcons } from "@expo/vector-icons";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, Controller } from "react-hook-form";
-import { View, TouchableOpacity, Text, TextInput } from "react-native";
+import {
+  View,
+  TouchableOpacity,
+  Text,
+  TextInput,
+  ActivityIndicator,
+} from "react-native";
 
 import { colors } from "@/styles/colors";
 import { useBottomSheetContext } from "@/context/bottomSheet.context";
@@ -24,6 +30,7 @@ export const NewTransaction = () => {
   const { closeBottomSheet } = useBottomSheetContext();
   const { createTransaction } = useTransactionContext();
 
+  const [loading, setLoading] = useState(false);
   const [typeId, setTypeId] = useState(0);
   const [categoryId, setCategoryId] = useState(0);
 
@@ -50,12 +57,14 @@ export const NewTransaction = () => {
       });
     } else {
       try {
+        setLoading(true);
         await createTransaction({
           description: data.description,
           value: price,
           categoryId,
           typeId,
         });
+        closeBottomSheet();
         notifyMessage({
           message: "Transação criada com sucesso",
           type: "SUCCESS",
@@ -66,6 +75,8 @@ export const NewTransaction = () => {
           message: "Erro ao criar transação",
           type: "ERROR",
         });
+      } finally {
+        setLoading(false);
       }
     }
   };
@@ -198,10 +209,18 @@ export const NewTransaction = () => {
         </View>
 
         <TouchableOpacity
+          disabled={loading}
           onPress={handleSubmit(onSubmit)}
-          className="bg-accent-brand w-full items-center justify-center h-[50px] rounded-xl mt-4"
+          className={clsx(
+            " w-full items-center justify-center h-[50px] rounded-xl mt-4",
+            loading && "opacity-50",
+          )}
         >
-          <Text className="text-sm font-bold text-white">Registrar</Text>
+          {loading ? (
+            <ActivityIndicator />
+          ) : (
+            <Text className="text-sm font-bold text-white">Registrar</Text>
+          )}
         </TouchableOpacity>
       </View>
     </View>
