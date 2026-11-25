@@ -10,7 +10,7 @@ export const AppHeader = () => {
   const { openBottomSheet } = useBottomSheetContext();
 
   return (
-    <View className="flex-row items-center justify-between w-full p-8">
+    <View className="flex-row items-center justify-between w-full p-8 bg-background-primary">
       <View>
         <Image
           className="h-[30px] w-[130px]"
